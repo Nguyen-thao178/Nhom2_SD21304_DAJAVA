@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "PolyCafe API - Supabase",
+      "request": "launch",
+      "mainClass": "vn.polycafe.PolyCafeApplication",
+      "cwd": "${workspaceFolder}/backend",
+      "env": {
+        "SUPABASE_DB_URL": "${input:jdbcUrl}",
+        "SUPABASE_DB_USER": "${input:databaseUser}",
+        "SUPABASE_DB_PASSWORD": "${input:databasePassword}",
+        "BOOTSTRAP_USERNAME": "${input:bootstrapUsername}",
+        "BOOTSTRAP_PASSWORD": "${input:bootstrapPassword}"
+      }
+    }
+  ],
+  "inputs": [
+    { "id": "jdbcUrl", "type": "promptString", "description": "JDBC URL từ Supabase Connect. Direct IPv6 hoặc Session pooler 5432, có sslmode=require", "default": "jdbc:postgresql://db.cqgbiwjooadiwfdpmzru.supabase.co:5432/postgres?sslmode=require" },
+    { "id": "databaseUser", "type": "promptString", "description": "DB user. Session pooler dùng postgres.cqgbiwjooadiwfdpmzru", "default": "postgres" },
+    { "id": "databasePassword", "type": "promptString", "description": "Mật khẩu PostgreSQL PolyCafe, không phải API key", "password": true },
+    { "id": "bootstrapUsername", "type": "promptString", "description": "Tài khoản owner lần chạy đầu. Để trống nếu đã có tài khoản", "default": "" },
+    { "id": "bootstrapPassword", "type": "promptString", "description": "Mật khẩu owner mới 12–72 byte UTF-8. Để trống nếu đã có tài khoản", "password": true }
+  ]
+}

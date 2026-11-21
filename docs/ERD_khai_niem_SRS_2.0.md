@@ -1,0 +1,53 @@
+# ERD khái niệm SRS 2.0
+38 bảng. id là PK; FK và lực lượng đối chiếu Phần 5 SRS 2.0.
+
+- **BRANCH:** _**id**, code, name, address, multi_station, timezone, status, brand_name, business_day_cutoff, layout_config_
+- **DINING_TABLE:** _**id**, branch_id, code, seats, qr_token, status, zone_code_
+- **STATION:** _**id**, branch_id, name, kind, status_
+- **APP_USER:** _**id**, username, full_name, password_hash, pin_hash, supplier_id, status, failed_count, locked_until, account_kind, refresh_version_
+- **MENU_ITEM:** _**id**, name, description, station_kind, allergen_note, status, category_code, category_name, kind, valid_from, valid_to, branch_overrides_
+- **PRICE_RULE:** _**id**, branch_id, channel, price, valid_from, valid_to, item_id, variant_id_
+- **COMBO_ITEM:** _**id**, combo_id, item_id, size_id, quantity, group_no, allow_swap_
+- **PROMOTION:** _**id**, name, kind, value, min_total, branch_id, channel, priority, stackable, code, max_uses, used_count, valid_from, valid_to, rules, campaign_key_
+- **CUSTOMER:** _**id**, member_code, kind, full_name, phone, email, tier, points_balance, status, user_id_
+- **POINT_LEDGER:** _**id**, customer_id, invoice_id, kind, points, balance_after, expires_at, origin_entry_id_
+- **INVOICE:** _**id**, branch_id, invoice_no, table_id, source, staff_id, customer_id, channel, status, subtotal, discount_total, total, paid_total, is_compensation, compensates_invoice_id, merged_into_invoice_id, split_from_invoice_id, idempotency_key, confirmed_by, confirmed_at, business_date, session_id, created_shift_id, responsible_shift_id, driver_user_id, partner, partner_order_id, delivery_data, einvoice_data, discount_snapshot, version_
+- **INVOICE_LINE:** _**id**, invoice_id, item_id, size_id, combo_id, quantity, unit_price, options_snapshot, note, status, origin_line_id, station_id, accepted_by, accepted_at, started_at, ready_at, priority, remake_cause, remake_reason, parent_line_id, recipe_id, line_kind, origin_kind, handed_qty, prepared_by, ready_by_
+- **TICKET:** _**id**, branch_id, invoice_id, ticket_no, pager_id, status, issued_by, closed_at, reopened_count, business_date, issued_at, returned_at_
+- **PAGER_DEVICE:** _**id**, branch_id, code, status, supports_remote_
+- **PAYMENT:** _**id**, shift_id, method, amount, status, tx_ref, confirmed_by, confirm_note, paid_at, kind, parent_payment_id, purchase_order_id, approval_id, requested_by, reason, reconcile_batch_key, reconciled_at, invoice_id_
+- **SHIFT:** _**id**, branch_id, opened_by, opened_at, closed_at, opening_cash, expected_cash, counted_cash, difference, status, handed_to_
+- **SHIFT_ASSIGNMENT:** _**id**, shift_id, user_id, station_id, cash_drawer, from_at, to_at, zone_code, duty_
+- **CASH_ENTRY:** _**id**, shift_id, kind, amount, reason, created_by_
+- **INGREDIENT:** _**id**, name, base_unit, min_stock, shelf_life_days, status_
+- **INGREDIENT_UNIT:** _**id**, ingredient_id, name, to_base_qty_
+- **RECIPE:** _**id**, item_id, size_id, version, status, effective_from_
+- **RECIPE_LINE:** _**id**, recipe_id, ingredient_id, quantity, unit_id, option_id_
+- **STOCK_LOT:** _**id**, branch_id, ingredient_id, lot_code, expiry_date, qty_remaining, unit_cost, reserved_qty_
+- **STOCK_MOVEMENT:** _**id**, branch_id, ingredient_id, lot_id, kind, qty_base, waste_cause, ref_type, ref_id, created_by, operation_key, seq_no_
+- **STOCK_DOCUMENT:** _**id**, branch_id, kind, status, purchase_order_id, reason, approved_by, from_branch_id, to_branch_id, transfer_request_id, needed_by, requested_by, received_by, supplier_submission_
+- **STOCK_DOCUMENT_LINE:** _**id**, document_id, ingredient_id, unit_id, quantity, counted_qty, lot_code, expiry_date, purchase_order_line_id, accepted_qty, rejected_qty, unit_cost_
+- **SUPPLIER:** _**id**, name, contact, tax_code, payment_terms_days, status_
+- **PURCHASE_ORDER:** _**id**, branch_id, supplier_id, status, requested_by, approved_by, ordered_at, total_amount, paid_amount, due_date_
+- **PURCHASE_ORDER_LINE:** _**id**, purchase_order_id, ingredient_id, unit_id, qty_ordered, qty_received, qty_rejected, unit_price_
+- **COMPLAINT:** _**id**, invoice_id, line_id, category, description, resolution, status, handled_by, compensation_invoice_id_
+- **APPROVAL_REQUEST:** _**id**, kind, ref_type, ref_id, amount, reason, requested_by, approver_id, status, decided_at_
+- **AUDIT_LOG:** _**id**, branch_id, actor_id, device_id, action, entity_type, entity_id, before_data, after_data, reason, request_id_
+- **INTEGRATION_CONFIG:** _**id**, branch_id, kind, endpoint, secret_ref, mode, status_
+- **MENU_VARIANT:** _**id**, item_id, kind, name, extra_price, sort_order, status_
+- **USER_ACCESS:** _**id**, user_id, branch_id, role, discount_limit_pct, refund_limit, permissions, status_
+- **DINING_SESSION:** _**id**, branch_id, table_id, status, opened_by, opened_at, closed_at_
+- **FULFILLMENT_EVENT:** _**id**, invoice_id, line_id, ticket_id, pager_id, kind, quantity, actor_id, receiver_id, receiver_label, result, request_key, note_
+- **ASYNC_OPERATION:** _**id**, kind, branch_id, actor_id, device_id, dedupe_key, payload_hash, payload, status, attempts, available_at, lease_until, result, last_error_
+
+## Quan hệ
+- Branch 1–N DiningTable, Station, Shift, Invoice, Ticket, PagerDevice, StockLot và StockDocument. Tầng/khu vực nằm trong cấu hình Branch.
+- AppUser 1–N UserAccess; Branch 1–N UserAccess, cho phép NULL phạm vi toàn dự án. Shift 1–N ShiftAssignment và CashEntry; AppUser 1–N ShiftAssignment. Customer 0..1–1 AppUser, Customer 1–N Invoice và PointLedger.
+- DiningTable 1–N DiningSession, mỗi bàn tối đa một phiên open. DiningSession 1–N Invoice. Invoice 1–N InvoiceLine, Payment, Ticket, FulfillmentEvent và Complaint.
+- MenuItem 1–N MenuVariant; MenuItem kind=combo 1–N ComboItem; mỗi ComboItem trỏ món thành phần và size hợp lệ. PriceRule N–1 MenuItem hoặc MenuVariant theo XOR.
+- InvoiceLine có self-FK parent_line_id cho thành phần, origin_line_id cho nguồn; Invoice có self-FK ghép/tách/bù. MenuItem/Combo 1–N InvoiceLine; Recipe 1–N InvoiceLine qua recipe_id.
+- Ticket N–1 PagerDevice, chỉ tối đa một ticket chưa thu hồi cùng thiết bị. FulfillmentEvent N–1 Ticket, InvoiceLine và PagerDevice khi có; lịch sử thiết bị không mất khi đổi thiết bị.
+- Payment N–1 Invoice cho thu/hoàn khách; Payment N–1 PurchaseOrder cho chi/hoàn nhà cung cấp. Payment self-FK parent_payment_id liên kết khoản hoàn với thu gốc. ApprovalRequest 1–N Payment theo số lần thử được kiểm soát.
+- Ingredient 1–N IngredientUnit, StockLot, RecipeLine và StockMovement. Recipe 1–N RecipeLine. StockLot 1–N StockMovement.
+- Supplier 1–N PurchaseOrder và AppUser supplier. PurchaseOrder 1–N PurchaseOrderLine và StockDocument; StockDocument 1–N StockDocumentLine. StockDocumentLine N–1 PurchaseOrderLine nếu có. StockDocument self-FK transfer_request_id nối yêu cầu với các lần xuất/nhận.
+- Promotion được tham chiếu có kiểm tra từ Invoice.discount_snapshot, không vẽ đường FK vật lý. AuditLog.entity_id, ApprovalRequest.ref_id và AsyncOperation.payload là tham chiếu đa hình được service kiểm tra, vẽ nét đứt với chú thích thay vì FK giả.
