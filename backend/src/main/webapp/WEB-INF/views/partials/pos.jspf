@@ -1,3 +1,4 @@
+<%@ page pageEncoding="UTF-8" %>
 <div class="notice">Quầy hỗ trợ lưu đơn nháp cho quản trị viên. Xác nhận đơn, thu tiền và gửi pha chế cần nghiệp vụ backend tương ứng.</div>
 <div class="pos-layout">
 <section>

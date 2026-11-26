@@ -65,6 +65,8 @@ class JspPageIntegrationTest {
             assertFalse(response.body().contains("<script>unsafe</script>"),page);
             assertTrue(response.body().contains("/polycafe/assets/cafe.js"),page);
         }
+        assertTrue(get("/app/overview").body().contains("Sẵn sàng cho những ly cà phê tiếp theo?"));
+        assertTrue(get("/app/overview").headers().firstValue("Content-Type").orElse("").toLowerCase().contains("charset=utf-8"));
         assertEquals(200,get("/app/data/ingredient").statusCode());
         assertEquals(404,get("/app/not-a-screen").statusCode());
     }
