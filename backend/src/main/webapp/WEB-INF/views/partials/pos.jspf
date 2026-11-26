@@ -1,0 +1,40 @@
+<div class="notice">Quầy hỗ trợ lưu đơn nháp cho quản trị viên. Xác nhận đơn, thu tiền và gửi pha chế cần nghiệp vụ backend tương ứng.</div>
+<div class="pos-layout">
+<section>
+<div class="toolbar">
+<div class="search-field">
+<span aria-hidden="true">⌕</span>
+<input id="product-search" aria-label="Tìm món bán" placeholder="Hôm nay khách chọn món gì?" maxlength="150">
+</div>
+<button id="products-next" class="button secondary">Xem thêm →</button>
+</div>
+<div id="product-grid" class="product-grid pos-products">
+</div>
+</section>
+<aside class="order-card panel">
+<div class="panel-heading">
+<div>
+<span class="eyebrow">TẠI QUẦY</span>
+<h2>Đơn đang soạn</h2>
+</div>
+<span class="badge neutral">Chưa lưu</span>
+</div>
+<div id="cart-items" class="cart-items">
+<p class="empty-state">Chọn một món để bắt đầu.</p>
+</div>
+<label for="pos-branch">Chi nhánh nhận đơn</label>
+<select id="pos-branch" class="full" aria-label="Chi nhánh nhận đơn">
+</select>
+<label for="order-note">Ghi chú cho đơn</label>
+<textarea id="order-note" rows="3" maxlength="300" placeholder="Yêu cầu của khách…">
+</textarea>
+<div class="order-total">
+<span>Tạm tính</span>
+<strong id="cart-total">0 ₫</strong>
+</div>
+<button id="save-draft" class="button primary full">Lưu đơn nháp</button>
+<button id="print-draft" class="button secondary full">In phiếu soạn đơn</button>
+<button id="clear-cart" class="text-button full">Xóa danh sách đang soạn</button>
+<small class="muted">Món được kiểm tra và tính lại giá tại chi nhánh khi lưu. Phiếu in là phiếu nháp.</small>
+</aside>
+</div>

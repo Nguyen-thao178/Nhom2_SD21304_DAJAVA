@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.*;
 
-/** Administrative CRUD. Finalized documents must be changed through domain transactions. */
 @Service
 public class CrudService {
     private static final Set<String> APPEND_ONLY = Set.of("audit_log", "stock_movement", "point_ledger", "fulfillment_event", "invoice_line_ingredient");
@@ -70,7 +69,11 @@ public class CrudService {
             for (String key : managed) if (values.containsKey(key)) throw new ApiException(400,"Thuộc tính nghiệp vụ do server quản lý: "+key);
             if(table.name().equals("point_ledger")) values.put("balance_after",0);
             if(table.name().equals("stock_lot")) values.put("qty_remaining",BigDecimal.ZERO);
-            for (String field : List.of("actor_id","created_by","requested_by","issued_by","opened_by")) {
+            if(table.name().equals("invoice")) {
+                values.put("paid_total",BigDecimal.ZERO);
+                values.putIfAbsent("discount_snapshot","{\"schema_version\":1,\"promotions\":[]}");
+            }
+            for (String field : List.of("actor_id","created_by","requested_by","issued_by","opened_by","staff_id")) {
                 if (table.has(field)) values.put(field,user.id());
             }
             if (table.name().equals("audit_log")) values.put("request_id",UUID.randomUUID().toString());

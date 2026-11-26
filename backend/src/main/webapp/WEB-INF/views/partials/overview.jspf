@@ -1,0 +1,74 @@
+<section class="welcome-banner">
+<div>
+<span class="eyebrow">MỖI NGÀY ĐỀU CÓ ĐIỀU MỚI</span>
+<h2>Chào <c:out value="${staffName}"/>.</h2>
+<p>Sẵn sàng cho những ly cà phê tiếp theo?</p>
+<a href="<c:url value='/app/pos'/>" class="button primary">Đến quầy bán hàng →</a>
+</div>
+<div class="banner-art" aria-hidden="true">
+<span class="cup-outline">
+</span>
+<span class="coffee-word">good<br>coffee.</span>
+</div>
+</section>
+<section class="stats-grid" id="overview-stats" aria-label="Tổng quan dữ liệu">
+<article class="stat-card">
+<span>Đơn gần nhất</span>
+<strong id="stat-orders">—</strong>
+<small>Trong tối đa 100 bản ghi vừa tải</small>
+</article>
+<article class="stat-card">
+<span>Chờ chế biến</span>
+<strong id="stat-prep">—</strong>
+<small>Trong danh sách món vừa tải</small>
+</article>
+<article class="stat-card">
+<span>Ticket đang phục vụ</span>
+<strong id="stat-tickets">—</strong>
+<small>Trong danh sách ticket vừa tải</small>
+</article>
+<article class="stat-card">
+<span>Món đang bán</span>
+<strong id="stat-menu">—</strong>
+<small>Trong danh sách món vừa tải</small>
+</article>
+</section>
+<div class="overview-grid">
+<section class="panel">
+<div class="panel-heading">
+<div>
+<h2>Đơn vừa ghi nhận</h2>
+<p class="muted">Những đơn đang cần được theo dõi.</p>
+</div>
+<a href="<c:url value='/app/orders'/>" class="text-link">Xem danh sách →</a>
+</div>
+<div id="recent-orders" class="table-wrap">
+<p class="empty-state">Đang tải dữ liệu…</p>
+</div>
+</section>
+<section class="panel">
+<div class="panel-heading">
+<h2>Đi nhanh đến</h2>
+</div>
+<div class="quick-links">
+<a href="<c:url value='/app/kitchen'/>">
+<span>01</span>
+<div>
+<strong>Quầy chế biến</strong>
+<small>Theo dõi từng món</small>
+</div>↗</a>
+<a href="<c:url value='/app/tickets'/>">
+<span>02</span>
+<div>
+<strong>Nhận món & thiết bị rung</strong>
+<small>Kiểm tra lượt bàn giao</small>
+</div>↗</a>
+<a href="<c:url value='/app/inventory'/>">
+<span>03</span>
+<div>
+<strong>Nguyên liệu & kho</strong>
+<small>Chuẩn bị cho ca tiếp theo</small>
+</div>↗</a>
+</div>
+</section>
+</div>

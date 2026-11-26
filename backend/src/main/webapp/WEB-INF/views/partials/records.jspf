@@ -1,0 +1,29 @@
+<div class="toolbar resource-toolbar">
+<label class="resource-label" for="resource-select">Danh mục</label>
+<select id="resource-select" aria-label="Chọn dữ liệu quản lý">
+<c:forEach items="${allTables}" var="table">
+<option value="<c:out value='${table}'/>" ${page.resource eq table ? 'selected' : ''}>
+<c:out value="${table}"/>
+</option>
+</c:forEach>
+</select>
+<div class="search-field">
+<span aria-hidden="true">⌕</span>
+<input id="record-search" placeholder="Lọc trong danh sách đang hiển thị…" aria-label="Lọc danh sách">
+</div>
+<button id="add-record" class="button primary">+ Thêm mới</button>
+</div>
+<div id="module-shortcuts" class="module-shortcuts">
+</div>
+<p id="resource-help" class="muted resource-help">
+</p>
+<section class="panel">
+<div id="record-list" class="table-wrap" aria-live="polite">
+<p class="empty-state">Đang tải dữ liệu…</p>
+</div>
+<div class="pagination">
+<span id="record-count" class="muted">
+</span>
+<button id="records-next" class="button secondary">Tải thêm →</button>
+</div>
+</section>

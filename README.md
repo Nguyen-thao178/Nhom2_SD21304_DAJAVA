@@ -1,6 +1,6 @@
 # PolyCafe API
 
-Java 21, Spring Boot 3.5.7, Spring JDBC, PostgreSQL Supabase, Tomcat nhúng. Mã nguồn tại `backend/src/main/java/vn/polycafe`. Giữ các API sản phẩm và đăng nhập cũ.
+Java 21, Spring Boot 3.5.7, Spring JDBC, PostgreSQL Supabase, Tomcat nhúng hoặc Apache Tomcat 10.1 qua WAR. Mã nguồn tại `backend/src/main/java/vn/polycafe`. Giữ các API sản phẩm và đăng nhập cũ.
 
 ## Kết nối và chạy trong VS Code
 
@@ -10,7 +10,7 @@ Java 21, Spring Boot 3.5.7, Spring JDBC, PostgreSQL Supabase, Tomcat nhúng. Mã
 4. DB hiện chưa có global owner/sysadmin. Lần chạy đầu nhập username và password bootstrap 12–72 byte UTF-8. Bootstrap chỉ tạo nếu username chưa tồn tại. Các lần sau để trống hai mục bootstrap.
 5. API mặc định `http://localhost:8080`. `/api/v1/database/status` xác minh JDBC sau khi đăng nhập.
 
-Chạy terminal bằng `mvn test` và `mvn package` trong `backend`. File jar có thể chạy với `java -jar target/polycafe-api-0.1.0.jar` khi đã đặt `SUPABASE_DB_URL`, `SUPABASE_DB_USER`, `SUPABASE_DB_PASSWORD`. Môi trường HTTPS đặt `COOKIE_SECURE=true`. Thông tin mẫu trong `backend/application-local.properties.example`. File thật `application-local.properties` đã được gitignore.
+Chạy terminal bằng `mvn test` và `mvn package` trong `backend`. File WAR có thể chạy với `java -jar target/polycafe-api-0.1.0.war` khi đã đặt `SUPABASE_DB_URL`, `SUPABASE_DB_USER`, `SUPABASE_DB_PASSWORD`. Môi trường HTTPS đặt `COOKIE_SECURE=true`. Thông tin mẫu trong `backend/application-local.properties.example`. File thật `application-local.properties` đã được gitignore.
 
 Kết nối MCP đã đọc được schema PolyCafe. Kết nối JDBC trực tiếp từ ứng dụng cần mật khẩu PostgreSQL do người vận hành nhập. Không dùng publishable key hoặc service-role key thay mật khẩu JDBC.
 
@@ -46,3 +46,16 @@ SQL chỉ ghép định danh từ allowlist đã đóng gói, mọi giá trị b
 ## Kiểm thử
 
 `mvn test` kiểm tra HTTP CRUD thật với H2, SQL injection được lưu như dữ liệu, JSON/type validation, 401/403, CSRF, từ chối XML, stale write, quyền quản trị, bảng bất biến và tồn âm. H2 thay advisory lock bằng alias test, không chứng minh khả năng khóa/concurrency PostgreSQL. Chưa có kiểm thử JDBC live tới Supabase khi thiếu DB password; chưa đo tải hoặc kiểm thử penetration đầy đủ. Snapshot `schema-columns.json`, `schema-constraints.json` và `crud-catalog.json` được lấy từ database, chỉ chứa metadata.
+
+
+## Giao diện JSP
+
+Mở http://localhost:8080/login sau khi khởi động. Menu gồm tổng quan, bán hàng, đơn, bàn, quầy chế biến, ticket, thực đơn, kho, mua hàng, khách, ca, báo cáo và thiết lập. Các màn hình quản lý dùng biểu mẫu theo schema cho 39 bảng, có tìm kiếm trên phần dữ liệu đã tải, phân trang, chi tiết, sửa và ngừng/xóa theo quy tắc backend. Các bảng chỉ thêm chỉ có xem và thêm bút toán được phép.
+
+Quầy bán hàng cho phép tìm món, soạn giỏ, chọn chi nhánh, lưu toàn bộ đơn nháp trong một transaction và in phiếu nháp. Server tính lại giá theo chi nhánh, ghi người tạo và chống gửi lặp cùng requestId. Quyền lưu nháp hiện dùng owner/sysadmin toàn dự án. Xác nhận đơn, gửi pha chế, điều khiển rung và thu/hoàn tiền thật vẫn cần các workflow backend chuyên biệt, giao diện không giả lập các kết quả này.
+
+Báo cáo dùng dữ liệu SQL tổng hợp theo ngày kinh doanh, có khoảng ngày, biểu đồ và tải CSV. Màn hình tổng quan chỉ đếm tối đa 100 bản ghi đã tải và ghi rõ phạm vi. Mọi chữ từ database được render bằng textContent hoặc c:out, API ghi tiếp tục dùng CSRF, phiên đăng nhập và kiểm quyền.
+
+Build bằng mvn package tạo WAR chạy được với java -jar hoặc triển khai lên Apache Tomcat 10.1 tương thích Jakarta. Khi deploy tên context khác, các đường dẫn giao diện/API lấy theo contextPath. src/main/webapp/WEB-INF/views chứa JSP, src/main/resources/static/assets chứa CSS và JavaScript. Không truy cập JSP trực tiếp trong WEB-INF.
+
+Kiểm thử bổ sung dùng Tomcat/Jasper thật để biên dịch tất cả màn hình, kiểm contextPath, redirect đăng nhập và escaping tên tài khoản; kiểm lưu đơn nháp, retry không trùng và rollback khi món không hợp lệ trên H2. Kết nối production Supabase vẫn cần mật khẩu PostgreSQL do người vận hành nhập.

@@ -22,10 +22,10 @@ import static org.junit.jupiter.api.Assertions.*;
     "app.bootstrap.username=","app.bootstrap.password="})
 @AutoConfigureMockMvc
 public class HttpCrudIntegrationTest {
-    @Autowired MockMvc http;
-    @Autowired JdbcTemplate db;
-    @Autowired ObjectMapper json;
-    MockHttpSession session;
+    @Autowired protected MockMvc http;
+    @Autowired protected JdbcTemplate db;
+    @Autowired protected ObjectMapper json;
+    protected MockHttpSession session;
     public static void lock(long value) { /* H2 substitute; PostgreSQL lock semantics require live DB tests. */ }
     @BeforeEach void setup() {
         db.execute("CREATE ALIAS IF NOT EXISTS pg_advisory_xact_lock FOR 'vn.polycafe.crud.HttpCrudIntegrationTest.lock'");

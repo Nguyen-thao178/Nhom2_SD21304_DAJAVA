@@ -1,0 +1,23 @@
+<div class="toolbar">
+<div class="search-field">
+<span aria-hidden="true">⌕</span>
+<input id="product-search" aria-label="Tìm món" placeholder="Tìm món hoặc danh mục…" maxlength="150">
+</div>
+<select id="product-status" aria-label="Trạng thái món">
+<option value="">Tất cả trạng thái</option value="active">Đang bán</option>
+<option value="paused">Tạm ngừng</option>
+<option value="sold_out">Hết món</option>
+<option value="seasonal">Theo mùa</option>
+<option value="archived">Đã lưu trữ</option>
+</select>
+<c:if test="${isManager}">
+<button id="add-product" class="button primary">+ Thêm món</button>
+</c:if>
+</div>
+<div id="product-grid" class="product-grid" aria-live="polite">
+</div>
+<div class="pagination">
+<button id="products-prev" class="button secondary">← Trang trước</button>
+<span id="products-page">Trang 1</span>
+<button id="products-next" class="button secondary">Trang sau →</button>
+</div>
