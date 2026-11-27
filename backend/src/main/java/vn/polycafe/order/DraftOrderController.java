@@ -1,4 +1,4 @@
-package vn.polycafe.web;
+package vn.polycafe.order;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -15,7 +15,7 @@ import java.time.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("/api/ui/draft-orders")
+@RequestMapping("/api/v1/orders/drafts")
 public class DraftOrderController {
     public record Line(@NotNull UUID itemId,@Min(1) @Max(99) int quantity) {}
     public record Draft(@NotNull UUID branchId,@NotNull UUID requestId,@NotEmpty @Size(max=50) List<@Valid Line> lines,@Size(max=300) String note) {}

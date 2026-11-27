@@ -134,7 +134,7 @@
     const headers = { Accept: "application/json", ...options.headers };
     if (options.body !== undefined) headers["Content-Type"] = "application/json";
     if (options.method && options.method !== "GET") {
-      if (!csrf) csrf = await api("/api/auth/csrf");
+      if (!csrf) csrf = await api("/api/v1/auth/csrf");
       headers[csrf.headerName] = csrf.token;
     }
     const response = await fetch(context + path, { credentials: "same-origin", ...options, headers });
@@ -150,7 +150,7 @@
   function badge(value) {
     const tone = ["cancelled", "canceled", "failed", "lost", "faulty", "locked"].includes(value) ? "danger"
       : ["pending", "waiting", "pending_accept", "in_progress", "requested", "calling"].includes(value) ? "warn"
-      : ["draft", "inactive", "closed", "archived"].includes(value) ? "neutral" : "";
+        : ["draft", "inactive", "closed", "archived"].includes(value) ? "neutral" : "";
     return element("span", "badge " + tone, statuses[value] || value || "—");
   }
   function display(value, key = "") {
@@ -220,7 +220,7 @@
       const submit = event.submitter;
       submit.disabled = true; $("#login-error").hidden = true;
       try {
-        await api("/api/auth/login", { method: "POST", body: JSON.stringify({ username: $("#username").value.trim(), password: $("#password").value }) });
+        await api("/api/v1/auth/login", { method: "POST", body: JSON.stringify({ username: $("#username").value.trim(), password: $("#password").value }) });
         $("#password").value = "";
         location.assign(context + "/app/overview");
       } catch (error) {
@@ -230,7 +230,7 @@
     });
   }
   async function overview() {
-    const menu = await api("/api/products?size=100&page=0&status=active");
+    const menu = await api("/api/v1/products?size=100&page=0&status=active");
     $("#stat-menu").textContent = menu.length;
     if (!manager) {
       $("#recent-orders").replaceChildren(element("p", "empty-state", "Danh sách đơn và báo cáo cần quyền quản trị. Bạn có thể xem thực đơn và soạn đơn tại quầy."));
@@ -284,7 +284,11 @@
       const payload = Object.fromEntries(new FormData(form));
       payload.price = Number(payload.price);
       if (row) payload.expectedUpdatedAt = row.updatedAt;
-      await api("/api/products" + (row ? "/" + row.id : ""), { method: row ? "PUT" : "POST", body: JSON.stringify(payload) });
+      await api("/api/v1/products" + (row ? "/" + row.id : ""), {
+        method: row ? "PATCH" : "POST",
+        headers: row && row.updatedAt ? { "X-Expected-Updated-At": row.updatedAt } : {},
+        body: JSON.stringify(payload)
+      });
       await loadProducts();
     });
   }
@@ -304,7 +308,7 @@
       actions.append(button("Sửa", () => editProduct(product)));
       if (product.status !== "archived") actions.append(button("Lưu trữ", async () => {
         if (await confirmAction("Lưu trữ món “" + product.name + "”? Món sẽ ngừng hiển thị trong danh sách bán.")) {
-          try { await api("/api/products/" + product.id, { method: "DELETE" }); await loadProducts(); toast("Đã lưu trữ món."); }
+          try { await api("/api/v1/products/" + product.id, { method: "DELETE" }); await loadProducts(); toast("Đã lưu trữ món."); }
           catch (error) { showMessage(error.message, true); }
         }
       }));
@@ -314,7 +318,7 @@
   }
   async function loadProducts() {
     const query = new URLSearchParams({ q: $("#product-search").value, page: productPage, size: screen === "pos" ? 60 : 12, status: screen === "pos" ? "active" : $("#product-status").value });
-    products = await api("/api/products?" + query);
+    products = await api("/api/v1/products?" + query);
     $("#product-grid").replaceChildren(...(products.length ? products.map(productCard) : [element("p", "empty-state", "Chưa có món phù hợp.")]));
     if ($("#products-page")) $("#products-page").textContent = "Trang " + (productPage + 1);
     if ($("#products-prev")) $("#products-prev").disabled = productPage === 0;
@@ -361,10 +365,12 @@
       const layout = $(".pos-layout");
       layout.inert = true;
       try {
-        const order = await api("/api/ui/draft-orders", { method: "POST", body: JSON.stringify({
-          requestId: draftRequestId, branchId: $("#pos-branch").value,
-          lines: [...cart.values()].map(entry => ({ itemId: entry.product.id, quantity: entry.quantity })), note: $("#order-note").value
-        }) });
+        const order = await api("/api/v1/orders/drafts", {
+          method: "POST", body: JSON.stringify({
+            requestId: draftRequestId, branchId: $("#pos-branch").value,
+            lines: [...cart.values()].map(entry => ({ itemId: entry.product.id, quantity: entry.quantity })), note: $("#order-note").value
+          })
+        });
         toast("Đã lưu " + order.invoice_no + " · " + money(order.total));
         cart.clear(); $("#order-note").value = ""; draftRequestId = crypto.randomUUID(); renderCart();
       } catch (error) { showMessage(error.message, true); }
@@ -534,7 +540,7 @@
   }
   async function loadReport() {
     const from = $("#report-from").value, to = $("#report-to").value;
-    const data = await api("/api/ui/reports?" + new URLSearchParams({ from, to }));
+    const data = await api("/api/v1/reports/revenue?" + new URLSearchParams({ from, to }));
     reportRows = data.daily;
     const totals = reportRows.reduce((acc, row) => {
       acc.orders += Number(row.orders || 0);
@@ -568,7 +574,7 @@
       const open = $("#sidebar").classList.toggle("open"); event.currentTarget.setAttribute("aria-expanded", String(open));
     });
     $("#logout").addEventListener("click", async () => {
-      try { await api("/api/auth/logout", { method: "POST" }); location.assign(context + "/login"); }
+      try { await api("/api/v1/auth/logout", { method: "POST" }); location.assign(context + "/login"); }
       catch (error) { showMessage(error.message, true); }
     });
     $("#refresh-page").addEventListener("click", () => location.reload());

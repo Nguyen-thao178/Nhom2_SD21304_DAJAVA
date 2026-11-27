@@ -41,21 +41,21 @@ class DraftOrderIntegrationTest extends HttpCrudIntegrationTest {
     }
     @Test void savesWholeDraftAtServerPriceAndReplaysWithoutDuplication() throws Exception {
         UUID key=UUID.randomUUID();
-        String result=http.perform(post("/api/ui/draft-orders").session(session).with(csrf()).contentType("application/json").content(body(key,2)))
+        String result=http.perform(post("/api/v1/orders/drafts").session(session).with(csrf()).contentType("application/json").content(body(key,2)))
             .andExpect(status().isCreated()).andExpect(jsonPath("$.status").value("draft")).andExpect(jsonPath("$.total").value(50000))
             .andReturn().getResponse().getContentAsString();
         String id=json.readTree(result).get("id").asText();
-        http.perform(post("/api/ui/draft-orders").session(session).with(csrf()).contentType("application/json").content(body(key,2)))
+        http.perform(post("/api/v1/orders/drafts").session(session).with(csrf()).contentType("application/json").content(body(key,2)))
             .andExpect(status().isCreated()).andExpect(jsonPath("$.id").value(id));
         assertEquals(1,db.queryForObject("SELECT count(*) FROM invoice",Integer.class));
         assertEquals(1,db.queryForObject("SELECT count(*) FROM invoice_line",Integer.class));
         assertEquals(1,db.queryForObject("SELECT count(*) FROM customer",Integer.class));
-        http.perform(post("/api/ui/draft-orders").session(session).with(csrf()).contentType("application/json").content(body(key,3)))
+        http.perform(post("/api/v1/orders/drafts").session(session).with(csrf()).contentType("application/json").content(body(key,3)))
             .andExpect(status().isConflict());
     }
     @Test void rejectedItemDoesNotLeavePartialDraftOrGuest() throws Exception {
         db.update("UPDATE menu_item SET status='sold_out' WHERE id=?",item);
-        http.perform(post("/api/ui/draft-orders").session(session).with(csrf()).contentType("application/json").content(body(UUID.randomUUID(),1)))
+        http.perform(post("/api/v1/orders/drafts").session(session).with(csrf()).contentType("application/json").content(body(UUID.randomUUID(),1)))
             .andExpect(status().isConflict());
         assertEquals(0,db.queryForObject("SELECT count(*) FROM invoice",Integer.class));
         assertEquals(0,db.queryForObject("SELECT count(*) FROM customer",Integer.class));

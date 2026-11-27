@@ -1,9 +1,9 @@
 # Copy to application-local.properties. Do not commit that file.
 # Supabase Dashboard > Connect > Session pooler > JDBC, port 5432.
 # Copy the exact host from your dashboard; do not guess pooler host.
-spring.datasource.url=jdbc:postgresql://YOUR_SESSION_POOLER_HOST:5432/postgres?sslmode=require
+spring.datasource.url=jdbc:postgresql:/postgresql://postgres.cqgbiwjooadiwfdpmzru:taminhhoangkhang@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres
 spring.datasource.username=postgres.cqgbiwjooadiwfdpmzru
-spring.datasource.password=YOUR_DATABASE_PASSWORD
+spring.datasource.password=taminhhoangkhang
 # First run only: creates owner only if username does not exist. Never resets a password.
 app.bootstrap.username=owner
 app.bootstrap.password=CHANGE_TO_A_STRONG_PASSWORD

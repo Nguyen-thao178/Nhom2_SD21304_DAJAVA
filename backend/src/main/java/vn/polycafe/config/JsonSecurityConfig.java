@@ -1,4 +1,4 @@
-package vn.polycafe.common;
+package vn.polycafe.config;
 
 import com.fasterxml.jackson.core.StreamReadConstraints;
 import com.fasterxml.jackson.core.StreamReadFeature;

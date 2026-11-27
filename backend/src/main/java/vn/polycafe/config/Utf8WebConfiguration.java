@@ -1,4 +1,4 @@
-package vn.polycafe.web;
+package vn.polycafe.config;
 
 import java.nio.charset.StandardCharsets;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;

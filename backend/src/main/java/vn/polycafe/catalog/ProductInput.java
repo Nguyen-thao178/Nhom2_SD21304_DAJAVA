@@ -1,4 +1,4 @@
-package vn.polycafe.product;
+package vn.polycafe.catalog;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;

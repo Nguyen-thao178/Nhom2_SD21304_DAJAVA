@@ -41,11 +41,21 @@ class JspPageIntegrationTest {
         return client.send(HttpRequest.newBuilder(URI.create(base+path)).GET().build(),HttpResponse.BodyHandlers.ofString());
     }
     void login() throws Exception {
-        var csrf=json.readTree(get("/api/auth/csrf").body());
-        var response=client.send(HttpRequest.newBuilder(URI.create(base+"/api/auth/login"))
+        var csrf=json.readTree(get("/api/v1/auth/csrf").body());
+        var response=client.send(HttpRequest.newBuilder(URI.create(base+"/api/v1/auth/login"))
             .header("Content-Type","application/json").header(csrf.get("headerName").asText(),csrf.get("token").asText())
             .POST(HttpRequest.BodyPublishers.ofString("{\"username\":\"jsp-owner\",\"password\":\"Test-JSP-only-123!\"}")).build(),HttpResponse.BodyHandlers.ofString());
         assertEquals(200,response.statusCode(),response.body());
+    }
+    @Test void vueCorsPreflightAllowsConfiguredOrigin() throws Exception {
+        var response=client.send(HttpRequest.newBuilder(URI.create(base+"/api/v1/auth/login"))
+            .header("Origin","http://localhost:5173")
+            .header("Access-Control-Request-Method","POST")
+            .header("Access-Control-Request-Headers","Content-Type, X-CSRF-TOKEN")
+            .method("OPTIONS",HttpRequest.BodyPublishers.noBody()).build(),HttpResponse.BodyHandlers.ofString());
+        assertEquals(200,response.statusCode(),response.body());
+        assertEquals("http://localhost:5173",response.headers().firstValue("Access-Control-Allow-Origin").orElse(""));
+        assertEquals("true",response.headers().firstValue("Access-Control-Allow-Credentials").orElse(""));
     }
     @Test void loginJspAndAssetsCompileOnRealTomcat() throws Exception {
         var response=get("/login");

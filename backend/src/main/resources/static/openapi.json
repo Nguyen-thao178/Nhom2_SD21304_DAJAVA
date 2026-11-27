@@ -11,6 +11,137 @@
     }
   ],
   "paths": {
+    "/api/v1/auth/csrf": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Get CSRF token and header name",
+        "responses": {
+          "200": { "description": "Success" }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Login staff session",
+        "responses": {
+          "200": { "description": "Authenticated" },
+          "401": { "description": "Invalid credentials or locked account" },
+          "429": { "description": "Rate limit exceeded" }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Get current authenticated staff user",
+        "responses": {
+          "200": { "description": "Success" },
+          "401": { "description": "Login required" }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Revoke session and logout",
+        "responses": {
+          "200": { "description": "Logged out" },
+          "401": { "description": "Login required" }
+        }
+      }
+    },
+    "/api/v1/products": {
+      "get": {
+        "tags": ["catalog"],
+        "summary": "List drink/food menu items with active base price",
+        "responses": {
+          "200": { "description": "Success" },
+          "401": { "description": "Login required" }
+        }
+      },
+      "post": {
+        "tags": ["catalog"],
+        "summary": "Create menu item and initial base price",
+        "responses": {
+          "201": { "description": "Created" },
+          "400": { "description": "Validation error" },
+          "403": { "description": "Manager role or CSRF required" },
+          "409": { "description": "Category conflict" }
+        }
+      }
+    },
+    "/api/v1/products/{id}": {
+      "get": {
+        "tags": ["catalog"],
+        "summary": "Get product detail",
+        "responses": {
+          "200": { "description": "Success" },
+          "404": { "description": "Not found" }
+        }
+      },
+      "put": {
+        "tags": ["catalog"],
+        "summary": "Update product and base price (supports X-Expected-Updated-At or body.expectedUpdatedAt)",
+        "responses": {
+          "200": { "description": "Updated" },
+          "409": { "description": "Optimistic concurrency or category conflict" }
+        }
+      },
+      "patch": {
+        "tags": ["catalog"],
+        "summary": "Update product and base price (supports X-Expected-Updated-At or body.expectedUpdatedAt)",
+        "responses": {
+          "200": { "description": "Updated" },
+          "409": { "description": "Optimistic concurrency or category conflict" }
+        }
+      },
+      "delete": {
+        "tags": ["catalog"],
+        "summary": "Archive product",
+        "responses": {
+          "204": { "description": "Archived" }
+        }
+      }
+    },
+    "/api/v1/orders/drafts": {
+      "post": {
+        "tags": ["order"],
+        "summary": "Create idempotent POS draft order with server-resolved branch pricing",
+        "responses": {
+          "201": { "description": "Draft order created or replayed" },
+          "409": { "description": "Idempotency mismatch or unavailable branch/item" }
+        }
+      }
+    },
+    "/api/v1/reports/revenue": {
+      "get": {
+        "tags": ["report"],
+        "summary": "Get daily revenue and payment collection summary",
+        "responses": {
+          "200": { "description": "Success" },
+          "400": { "description": "Invalid date range (>366 days)" }
+        }
+      }
+    },
+    "/api/v1/database/status": {
+      "get": {
+        "tags": ["database"],
+        "summary": "Check JDBC connectivity and mapped tables",
+        "responses": {
+          "200": { "description": "Success" }
+        }
+      }
+    },
+    "/api/v1/database/catalog": {
+      "get": {
+        "tags": ["database"],
+        "summary": "List schema metadata for all mapped tables",
+        "responses": {
+          "200": { "description": "Success" }
+        }
+      }
+    },
     "/api/v1/app-user": {
       "get": {
         "tags": [

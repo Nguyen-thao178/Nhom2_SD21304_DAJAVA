@@ -10,7 +10,7 @@ import org.springframework.security.web.csrf.CsrfToken;
 import vn.polycafe.common.ApiException;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 public class AuthController {
     private final AuthService auth;
 

@@ -1,4 +1,4 @@
-package vn.polycafe.web;
+package vn.polycafe.report;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 @RestController
-@RequestMapping("/api/ui/reports")
+@RequestMapping("/api/v1/reports/revenue")
 public class ReportController {
     private final JdbcTemplate db;
     private final CrudService permissions;
