@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    overscroll-behavior: none;
+  }
+
+  main > :first-child {
+    margin-top: 0 !important;
+  }
+
+  main > :last-child {
+    margin-bottom: 0 !important;
+  }
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes floatCup {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(-12deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(-10deg);
+  }
+}
+
+.animate-float-cup {
+  animation: floatCup 6s ease-in-out infinite;
+}
