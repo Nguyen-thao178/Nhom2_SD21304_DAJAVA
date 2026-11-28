@@ -1,0 +1,11 @@
+<script setup>
+import { ref, onMounted } from 'vue'
+import { api, command, requestId } from '../../api/client'
+import { workspace, money, labels, capabilities } from '../../services/workspace'
+const shifts = ref([]), opening = ref('500000'), counted = ref({}), reason = ref(''), error = ref(''), message = ref(''), busy = ref(false)
+const keys = new Map()
+async function load() { shifts.value = await api('/api/v1/operations/shifts?branch=' + workspace.branch) }
+onMounted(() => load().catch(e => error.value = e.message))
+async function run(path, data) { busy.value = true; error.value = ''; const key = path + JSON.stringify(data); if (!keys.has(key)) keys.set(key, requestId()); try { await command(path, { ...data, requestId: keys.get(key) }); keys.delete(key); message.value = 'Server đã ghi nhận ca.'; await load(); await capabilities() } catch (e) { error.value = e.message } finally { busy.value = false } }
+</script>
+<template><h1>Ca làm và kiểm đếm tiền</h1><p>Số tiền mong đợi = tiền đầu ca + thu tiền mặt − hoàn tiền mặt + thu chi trong ca. Không tự nhập lại số hệ thống.</p><p v-if="error" role="alert" class="error">{{ error }}</p><p v-if="message" class="success">{{ message }}</p><fieldset :disabled="busy"><section class="card"><form @submit.prevent="run('/shifts', { branchId: workspace.branch, openingCash: String(opening) })"><label>Tiền mặt đầu ca<input v-model="opening" type="number" min="0" step="1" required></label><button>Mở ca của tôi</button></form></section><section v-for="s in shifts" :key="s.id" class="card"><h2>{{ s.operator_name }} · {{ labels[s.status] }}</h2><p>Mở lúc {{ new Date(s.opened_at).toLocaleString('vi-VN') }}</p><p>Đầu ca {{ money(s.opening_cash) }} · Tiền mong đợi {{ money(s.expected_cash) }}</p><p v-if="s.status === 'closed'">Kiểm đếm {{ money(s.counted_cash) }} · Chênh lệch {{ money(s.difference) }}</p><form v-else @submit.prevent="run('/shifts/' + s.id + '/close', { countedCash: String(counted[s.id] ?? ''), reason })"><label>Tiền mặt kiểm đếm thực tế<input v-model="counted[s.id]" type="number" min="0" step="1" required></label><label>Lý do / xác nhận quản lý nếu lệch<input v-model="reason" maxlength="300"></label><button>Kết ca và chốt tiền</button></form></section></fieldset></template>

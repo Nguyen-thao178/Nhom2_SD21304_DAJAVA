@@ -23,11 +23,8 @@ public class RequestProtectionFilter extends OncePerRequestFilter {
     @Override protected void doFilterInternal(HttpServletRequest request,HttpServletResponse response,FilterChain chain)
             throws IOException,ServletException {
         response.setHeader("Cache-Control","no-store");
-        String contextPath = request.getContextPath();
-        String path = contextPath != null && !contextPath.isEmpty() && request.getRequestURI().startsWith(contextPath)
-            ? request.getRequestURI().substring(contextPath.length())
-            : request.getRequestURI();
-        if("/api/v1/auth/login".equals(path)) {
+        String path=request.getRequestURI().substring(request.getContextPath().length());
+        if("/api/v1/auth/login".equals(path) || (request.getMethod().equals("POST") && path.startsWith("/api/qr/"))) {
             long now=System.nanoTime();
             // Do not trust X-Forwarded-For supplied by a public client.
             String ip=request.getRemoteAddr();

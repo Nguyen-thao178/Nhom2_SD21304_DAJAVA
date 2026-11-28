@@ -92,6 +92,8 @@ public class CrudService {
     @Transactional
     public Map<String,Object> create(String name, Map<String,Object> body, StaffUser user) {
         authorize(user);
+        if(Set.of("ticket","payment","shift","cash_entry","fulfillment_event","stock_movement","point_ledger","audit_log").contains(name))
+            throw new ApiException(409,"Dữ liệu vận hành phải được ghi qua lệnh nghiệp vụ, không tạo trực tiếp bằng CRUD.");
         var table=catalog.table(name);
         var values=input(table,body,true,user);
         // A shared transaction lock serializes related administrative edits, including parent checks.
@@ -158,6 +160,8 @@ public class CrudService {
         }
     }
     private void protectLifecycle(String name, Map<String,Object> before, Map<String,Object> values) {
+        if(Set.of("ticket","pager_device","shift","payment","cash_entry","approval_request","stock_lot","dining_session").contains(name))
+            throw new ApiException(409,"Dùng màn hình vận hành để thay đổi dữ liệu đã có trạng thái.");
         Set<String> protectedFields = Set.of("status","paid_total","points_balance","qty_remaining","reserved_qty","handed_qty","used_count","approved_by","approver_id","balance_after","approved_at","paid_at","decided_at","returned_at","closed_at","accepted_by","prepared_by","ready_by","started_at","ready_at","confirmed_at","confirmed_by","einvoice_data","delivery_data","actor_id","created_by","requested_by","issued_by","opened_by","staff_id","qty_received","qty_rejected","paid_amount");
         for(String key:values.keySet()) if(protectedFields.contains(key) && !Objects.equals(values.get(key),before.get(key)))
             throw new ApiException(409,"Thuộc tính cần nghiệp vụ chuyên biệt: "+key);

@@ -18,8 +18,9 @@ public class SessionFilter extends OncePerRequestFilter {
             var account=users.byId(saved.id());
             if(account.isPresent() && users.allowed(account.get()) && account.get().version()==saved.refreshVersion()) {
                 var fresh=users.staff(account.get());
-                if(fresh.roles().stream().anyMatch(java.util.Set.of("staff","shift_lead","owner","sysadmin","accountant")::contains)) {
-                    var auth=new UsernamePasswordAuthenticationToken(fresh,null,List.of(new SimpleGrantedAuthority("ROLE_STAFF")));
+                boolean customer=account.get().kind().equals("customer");
+                if(customer || fresh.roles().stream().anyMatch(java.util.Set.of("staff","shift_lead","owner","sysadmin","accountant")::contains)) {
+                    var auth=new UsernamePasswordAuthenticationToken(fresh,null,List.of(new SimpleGrantedAuthority(customer?"ROLE_CUSTOMER":"ROLE_STAFF")));
                     var context=SecurityContextHolder.createEmptyContext(); context.setAuthentication(auth); SecurityContextHolder.setContext(context);
                 } else session.invalidate();
             } else session.invalidate();

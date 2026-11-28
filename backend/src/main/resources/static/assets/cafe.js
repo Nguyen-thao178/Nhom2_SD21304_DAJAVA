@@ -220,9 +220,9 @@
       const submit = event.submitter;
       submit.disabled = true; $("#login-error").hidden = true;
       try {
-        await api("/api/v1/auth/login", { method: "POST", body: JSON.stringify({ username: $("#username").value.trim(), password: $("#password").value }) });
+        const signedIn = await api("/api/v1/auth/login", { method: "POST", body: JSON.stringify({ username: $("#username").value.trim(), password: $("#password").value }) });
         $("#password").value = "";
-        location.assign(context + "/app/overview");
+        location.assign(context + (signedIn.roles.includes("customer") ? "/customer" : signedIn.canManageProducts ? "/app/overview" : "/app/qr-codes"));
       } catch (error) {
         $("#login-error").textContent = error.message;
         $("#login-error").hidden = false;

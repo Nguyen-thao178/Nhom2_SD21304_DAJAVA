@@ -18,6 +18,7 @@ public class UserRepository {
     public Optional<Account> byUsernameLocked(String name) { return db.query("SELECT * FROM app_user WHERE username=? FOR UPDATE",this::row,name).stream().findFirst(); }
     public Optional<Account> byId(UUID id) { return db.query("SELECT * FROM app_user WHERE id=?",this::row,id).stream().findFirst(); }
     public StaffUser staff(Account a) {
+        if(a.kind().equals("customer")) return new StaffUser(a.id(),a.username(),a.fullName(),a.version(),Set.of("customer"),false);
         var rows=db.queryForList("SELECT role,branch_id FROM user_access WHERE user_id=? AND status='active'",a.id());
         Set<String> roles=new HashSet<>(); boolean manage=false;
         for(var r:rows) {
@@ -27,7 +28,8 @@ public class UserRepository {
         return new StaffUser(a.id(),a.username(),a.fullName(),a.version(),roles,manage);
     }
     public boolean allowed(Account a) {
-        return a.kind().equals("staff") && a.status().equals("active") && (a.lockedUntil()==null || !a.lockedUntil().isAfter(OffsetDateTime.now()));
+        boolean kindAllowed=a.kind().equals("staff") || (a.kind().equals("customer") && db.queryForObject("SELECT count(*) FROM customer WHERE user_id=? AND kind='member' AND status='active'",Integer.class,a.id())==1);
+        return kindAllowed && a.status().equals("active") && (a.lockedUntil()==null || !a.lockedUntil().isAfter(OffsetDateTime.now()));
     }
     public void failed(Account a) {
         int count=(a.lockedUntil()!=null && !a.lockedUntil().isAfter(OffsetDateTime.now()))?1:a.failed()+1;

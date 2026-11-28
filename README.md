@@ -1,5 +1,7 @@
 # PolyCafe API
 
+Trang thành viên `/customer`, trang QR theo bàn `/app/qr-codes`. Hướng dẫn tài khoản mẫu, phân quyền và cấu hình URL cho điện thoại: [QR_MEMBERS.md](docs/QR_MEMBERS.md).
+
 Java 21, Spring Boot 3.5.7, Spring JDBC, PostgreSQL Supabase, Tomcat nhúng hoặc Apache Tomcat 10.1 qua WAR. Mã nguồn tại `backend/src/main/java/vn/polycafe`. Giữ các API sản phẩm và đăng nhập cũ.
 
 ## Kết nối và chạy trong VS Code

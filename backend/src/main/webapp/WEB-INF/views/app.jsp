@@ -21,6 +21,7 @@
 <span class="status-dot">
 </span> Không gian vận hành</div>
 <nav aria-label="Điều hướng chính">
+<a class="nav-link" href="<c:url value='/app/qr-codes'/>">QR tại bàn &amp; yêu cầu món</a>
 <c:set var="previousGroup" value=""/>
 <c:forEach items="${screens}" var="nav">
 <c:if test="${nav.group ne previousGroup}">

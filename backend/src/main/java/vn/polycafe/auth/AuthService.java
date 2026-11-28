@@ -26,7 +26,7 @@ public class AuthService {
         if(!users.allowed(a)) { encoder.matches(password,dummyHash); return null; }
         if(!encoder.matches(password,a.hash())) { users.failed(a); return null; }
         var staff=users.staff(a);
-        if(staff.roles().stream().noneMatch(Set.of("staff","shift_lead","owner","sysadmin","accountant")::contains)) return null;
+        if(staff.roles().stream().noneMatch(Set.of("staff","shift_lead","owner","sysadmin","accountant","customer")::contains)) return null;
         users.reset(a.id()); audit.record(a.id(),"login","app_user",a.id(),null,null); return staff;
     }
     @Transactional

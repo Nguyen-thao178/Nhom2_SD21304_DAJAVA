@@ -34,7 +34,9 @@ public class PageController {
     private final SchemaCatalog catalog;
     public PageController(SchemaCatalog catalog) {this.catalog=catalog;}
     @GetMapping({"/","/app"}) public String home() {return "redirect:/app/overview";}
-    @GetMapping("/login") public String login(@AuthenticationPrincipal StaffUser user) {return user==null?"login":"redirect:/app/overview";}
+    @GetMapping("/login") public String login(@AuthenticationPrincipal StaffUser user) {return user==null?"login":user.roles().contains("customer")?"redirect:/customer":"redirect:/app/overview";}
+    @GetMapping({"/customer","/qr/{token}"}) public String customer() {return "customer";}
+    @GetMapping("/app/qr-codes") public String qrCodes() {return "qr-codes";}
     @GetMapping("/app/{screen}")
     public String screen(@PathVariable String screen,@AuthenticationPrincipal StaffUser user,Model model) {
         Screen selected=SCREENS.stream().filter(s->s.path().equals(screen)).findFirst().orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));

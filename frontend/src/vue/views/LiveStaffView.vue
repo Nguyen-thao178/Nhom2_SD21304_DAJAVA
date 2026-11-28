@@ -1,0 +1,11 @@
+<script setup>
+import { ref, onMounted } from 'vue'
+import { api } from '../../api/client'
+import { workspace } from '../../services/workspace'
+const rows = ref([]), username = ref(''), fullName = ref(''), password = ref(''), reason = ref(''), error = ref(''), busy = ref(false)
+async function load() { rows.value = await api('/api/v1/staff/users?branch=' + workspace.branch) }
+onMounted(() => load().catch(e => error.value = e.message))
+async function create() { busy.value = true; error.value = ''; try { await api('/api/v1/staff/users', { method: 'POST', body: { branchId: workspace.branch, username: username.value, fullName: fullName.value, password: password.value } }); password.value = ''; username.value = ''; fullName.value = ''; await load() } catch (e) { error.value = e.message } finally { busy.value = false } }
+async function toggle(user) { busy.value = true; error.value = ''; try { await api('/api/v1/staff/users/' + user.id + '/status?branch=' + workspace.branch, { method: 'POST', body: { locked: user.status === 'active', reason: reason.value } }); await load() } catch (e) { error.value = e.message } finally { busy.value = false } }
+</script>
+<template><h1>Nhân viên trong phạm vi được cấp</h1><p>Quản lý chi nhánh chỉ cấp tài khoản nhân viên thường tại chi nhánh mình. Không tự nâng quyền; tài khoản dùng nhiều chi nhánh cần quản trị toàn hệ thống xử lý.</p><p v-if="error" class="error">{{ error }}</p><fieldset :disabled="busy"><form class="card" @submit.prevent="create"><h2>Cấp tài khoản nhân viên</h2><label>Tên đăng nhập<input v-model="username" required minlength="3" maxlength="60" pattern="[A-Za-z0-9_.-]+"></label><label>Họ tên<input v-model="fullName" required maxlength="150"></label><label>Mật khẩu ban đầu từ 12 đến 72 byte UTF-8<input v-model="password" type="password" autocomplete="new-password" required minlength="12" maxlength="72"></label><button>Tạo nhân viên</button></form><label>Lý do khóa hoặc mở khóa<input v-model="reason" maxlength="300"></label><table><thead><tr><th>Nhân viên</th><th>Tài khoản</th><th>Trạng thái</th><th></th></tr></thead><tbody><tr v-for="u in rows" :key="u.id"><td>{{ u.full_name }}</td><td>{{ u.username }}</td><td>{{ u.status }}</td><td><button :disabled="!reason.trim()" @click="toggle(u)">{{ u.status === 'active' ? 'Khóa' : 'Mở khóa' }}</button></td></tr></tbody></table></fieldset></template>

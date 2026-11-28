@@ -35,6 +35,7 @@
             </section>
             <main class="login-panel">
                 <div class="login-box">
+<p><a href="<c:url value='/customer'/>">Thành viên · QR →</a></p>
                     <span class="eyebrow">CHÀO MỪNG TRỞ LẠI</span>
                     <h2>Bắt đầu một ca mới.</h2>
                     <p class="muted">Đăng nhập bằng tài khoản được cấp cho bạn.</p>

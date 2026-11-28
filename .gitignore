@@ -4,4 +4,5 @@
 **/.env
 **/application-local.properties
 *.log
+**/demo-accounts.local.txt
 .DS_Store
